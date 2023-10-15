@@ -8,7 +8,6 @@ struct Point {
     double x, y, z;
     Point(double x, double y, double z) : x(x), y(y), z(z) {}
 
-    // Custom equality operator for Point
     bool operator==(const Point& other) const {
         double epsilon = 1e-6;
         return (std::abs(x - other.x) < epsilon &&
@@ -16,7 +15,6 @@ struct Point {
                 std::abs(z - other.z) < epsilon);
     }
 
-    // Custom comparison operator for using Point as keys in std::map
     bool operator<(const Point& other) const {
         if (x != other.x) return x < other.x;
         if (y != other.y) return y < other.y;
@@ -34,12 +32,10 @@ struct Triangle {
 
     Triangle(const Point& p1, const Point& p2, const Point& p3) : p1(p1), p2(p2), p3(p3) {}
 
-    // Custom equality operator for Triangle
     bool operator==(const Triangle& other) const {
         return (p1 == other.p1 && p2 == other.p2 && p3 == other.p3);
     }
 
-    // Custom comparison operator for using Triangle as keys in std::map
     bool operator<(const Triangle& other) const {
         if (p1 != other.p1) return p1 < other.p1;
         if (p2 != other.p2) return p2 < other.p2;
@@ -125,14 +121,12 @@ std::vector<Point> divideTriangle(const Point& p1, const Point& p2, const Point&
 //    Point sphericalP2 = toSpherical(triangle.p2);
 //    Point sphericalP3 = toSpherical(triangle.p3);
 //
-//    // Найти минимальные и максимальные значения углов
 //    double minTheta = std::min(std::min(sphericalP1.y, sphericalP2.y), sphericalP3.y);
 //    double maxTheta = std::max(std::max(sphericalP1.y, sphericalP2.y), sphericalP3.y);
 //
 //    double minPhi = std::min(std::min(sphericalP1.z, sphericalP2.z), sphericalP3.z);
 //    double maxPhi = std::max(std::max(sphericalP1.z, sphericalP2.z), sphericalP3.z);
 //
-//    // Проверить, находится ли точка внутри углов
 //    if (point.y >= minTheta && point.y <= maxTheta &&
 //        point.z >= minPhi && point.z <= maxPhi) {
 //        return true;
