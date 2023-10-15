@@ -6,7 +6,6 @@
 
 struct Point {
     double x, y, z;
-
     Point(double x, double y, double z) : x(x), y(y), z(z) {}
 
     // Custom equality operator for Point
@@ -102,6 +101,46 @@ std::vector<Point> divideTriangle(const Point& p1, const Point& p2, const Point&
     }
     return points;
 }
+// проверка на принадлежность точки к треугольнику
+//Point toSpherical(const Point& cartPoint) {
+//    double r = std::sqrt(cartPoint.x * cartPoint.x + cartPoint.y * cartPoint.y + cartPoint.z * cartPoint.z);
+//    double theta = std::atan2(cartPoint.y, cartPoint.x);
+//    double phi = std::acos(cartPoint.z / r);
+//
+//    return Point(r, theta, phi);
+//}
+//
+//Triangle convertToSpherical(const Triangle& cartesianTriangle) {
+//    Point sphericalP1 = toSpherical(cartesianTriangle.p1);
+//    Point sphericalP2 = toSpherical(cartesianTriangle.p2);
+//    Point sphericalP3 = toSpherical(cartesianTriangle.p3);
+//
+//    return Triangle(sphericalP1, sphericalP2, sphericalP3);
+//}
+//
+//
+//bool isPointInsideSphericalTriangle(const Point& point, const Triangle& triangle) {
+//    // Преобразовать вершины треугольника в сферические координаты
+//    Point sphericalP1 = toSpherical(triangle.p1);
+//    Point sphericalP2 = toSpherical(triangle.p2);
+//    Point sphericalP3 = toSpherical(triangle.p3);
+//
+//    // Найти минимальные и максимальные значения углов
+//    double minTheta = std::min(std::min(sphericalP1.y, sphericalP2.y), sphericalP3.y);
+//    double maxTheta = std::max(std::max(sphericalP1.y, sphericalP2.y), sphericalP3.y);
+//
+//    double minPhi = std::min(std::min(sphericalP1.z, sphericalP2.z), sphericalP3.z);
+//    double maxPhi = std::max(std::max(sphericalP1.z, sphericalP2.z), sphericalP3.z);
+//
+//    // Проверить, находится ли точка внутри углов
+//    if (point.y >= minTheta && point.y <= maxTheta &&
+//        point.z >= minPhi && point.z <= maxPhi) {
+//        return true;
+//    }
+//
+//    return false;
+//}
+
 
 
 int main() {
@@ -166,7 +205,7 @@ int main() {
         std::cout << "(" << triangle.p3.x << ", " << triangle.p3.y << ", " << triangle.p3.z << ")\n";
     }
 
-    // Выводим информацию о связях между треугольниками
+    // связи между треугольниками
     for (int i = 0; i < graph.adjacencyList.size(); i++) {
         std::cout << "Adjacent triangles to Triangle " << i + 1 << ": ";
         for (int neighbor : graph.adjacencyList[i]) {
