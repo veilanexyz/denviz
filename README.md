@@ -1,4 +1,4 @@
-#DenViz
+<h1 align="center">DenViz</a></h1>
 Задачи:
 1. Генерация различных данных и их сохранение (Татьяна Глушко)
 Ссылка на личное хранилище: https://github.com/Tog91l/misis2023f-22-3-glushko-t-a
