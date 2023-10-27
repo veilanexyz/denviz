@@ -13,4 +13,4 @@
 
 Ссылка на личное хранилище(Анастасия): https://github.com/AnastasiayA26/misis2023f-22-03-yasakova-a-m
 
-Ссылка на личное хранилище(Ирина):
+Ссылка на личное хранилище(Ирина): https://github.com/IrinaDudko0712/misis2023f-22-3-dudko-i-a
