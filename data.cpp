@@ -6,11 +6,8 @@
 #include <cmath>
 #include <ctime>
 #include <cstdlib>
-#include <filesystem>
 #include <random>
-
-
-namespace fs = std::filesystem;
+#include <filesystem>
 
 struct Arc {
     double azim, inclin;
@@ -21,8 +18,8 @@ double randomRange(double min, double max) {
 }
 
 void generateData(int numArc, const std::string& folderPath) {
-    if (!fs::exists(folderPath)) {
-        fs::create_directory(folderPath);
+    if (!std::filesystem::exists(folderPath)) {
+        std::filesystem::create_directory(folderPath);
     }
 
     std::vector<Arc> arcsVector;
@@ -40,6 +37,7 @@ void generateData(int numArc, const std::string& folderPath) {
         arcsList.emplace_back(arc);
         arcsDeque.emplace_back(arc);
     }
+
     std::ofstream arcsVectorFile(folderPath + "/arcsVector.txt");
     for (const auto& arc : arcsVector) {
         arcsVectorFile << "(" << arc.azim << ", " << arc.inclin << ")" << std::endl;
@@ -54,15 +52,13 @@ void generateData(int numArc, const std::string& folderPath) {
 
     std::ofstream arcsDequeFile(folderPath + "/arcsDeque.txt");
     for (const auto& arc : arcsDeque) {
-        arcsDequeFile << "(" << arc.azim << ", " << arc.inclin<<")" << std::endl;
+        arcsDequeFile << "(" << arc.azim << ", " << arc.inclin << ")" << std::endl;
     }
     arcsDequeFile.close();
 }
 
 struct Vector {
     double x, y;
-
-
 };
 
 double randomRange_1() {
@@ -72,14 +68,11 @@ double randomRange_1() {
     return dis(gen);
 }
 
-
 void generateData_1(int numVec, const std::string& folderPath) {
-
-    if (!fs::exists(folderPath)) {
-        fs::create_directory(folderPath);
+    if (!std::filesystem::exists(folderPath)) {
+        std::filesystem::create_directory(folderPath);
     }
 
-    
     std::vector<Vector> vectorsVector;
     std::list<Vector> vectorsList;
     std::deque<Vector> vectorsDeque;
@@ -98,7 +91,7 @@ void generateData_1(int numVec, const std::string& folderPath) {
 
     std::ofstream vectorsVectorFile(folderPath + "/vectorsVector.txt");
     for (const auto& vec : vectorsVector) {
-        vectorsVectorFile <<"(" << vec.x << " " << vec.y <<")"<< std::endl;
+        vectorsVectorFile << "(" << vec.x << " " << vec.y << ")" << std::endl;
     }
     vectorsVectorFile.close();
 
@@ -118,6 +111,7 @@ void generateData_1(int numVec, const std::string& folderPath) {
 struct Point {
     double x, y;
 };
+
 Point generatePoint() {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -129,10 +123,10 @@ Point generatePoint() {
 
     return { x, y };
 }
+
 void generateData_2(int numPoint, const std::string& folderPath) {
- 
-    if (!fs::exists(folderPath)) {
-        fs::create_directory(folderPath);
+    if (!std::filesystem::exists(folderPath)) {
+        std::filesystem::create_directory(folderPath);
     }
 
     std::vector<Point> pointsVector;
@@ -141,16 +135,12 @@ void generateData_2(int numPoint, const std::string& folderPath) {
 
     srand(static_cast<unsigned int>(time(nullptr)));
 
-
     for (int i = 0; i < numPoint; ++i) {
         Point point = generatePoint();
         pointsVector.emplace_back(point);
         pointsList.emplace_back(point);
         pointsDeque.emplace_back(point);
-    }
-
-   
-    std::ofstream pointsVectorFile(folderPath + "/pointsVector.txt");
+    }std::ofstream pointsVectorFile(folderPath + "/pointsVector.txt");
     for (const auto& point : pointsVector) {
         pointsVectorFile << "(" << point.x << " " << point.y << ")" << std::endl;
     }
@@ -168,26 +158,24 @@ void generateData_2(int numPoint, const std::string& folderPath) {
     }
     pointsDequeFile.close();
 }
+
 int main() {
+    std::setlocale(LC_ALL, "Russian");
 
-
-    std::setlocale(LC_ALL,"Russian");
     int numArc, numVec, numPoint;
     std::cout << "Введите значение дуг: ";
     std::cin >> numArc;
     std::cout << "Введите значение векторов: ";
     std::cin >> numVec;
-    std::cout << "Введите значения точек:";
+    std::cout << "Введите значения точек: ";
     std::cin >> numPoint;
     std::string folderPath = "data";
 
     generateData(numArc, folderPath);
-
     generateData_1(numVec, folderPath);
     generateData_2(numPoint, folderPath);
     std::cout << "Данные успешно сгенерированы и сохранены в папку data." << std::endl;
 
     return 0;
 }
-
 
