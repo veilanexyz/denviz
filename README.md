@@ -1,6 +1,7 @@
 <h1 align="center">DenViz</a></h1>
 
-![Изначальная картинка]([https://github.com/veilanexyz/pictures/denviz.jpg])
+![Изначальная картинка]([https://github.com/veilanexyz/pictures/main/denviz.jpg])
+
 Задачи:
 
 1. Генерация данных в виде дуг, их сохранение и отрисовка (Татьяна Глушко)
