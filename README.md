@@ -1,6 +1,6 @@
 <h1 align="center">DenViz</a></h1>
 
-![Изначальная картинка]([https://github.com/veilanexyz/pictures/blob/main/denviz.jpg])
+![Изначальная картинка](https://github.com/veilanexyz/pictures/blob/main/denviz.jpg)
 
 Задачи:
 
