@@ -20,5 +20,5 @@
 
 Ссылка на личное хранилище(Ирина): https://github.com/IrinaDudko0712/misis2023f-22-3-dudko-i-a
 
-<img src="https://github.com/veilanexyz/pictures/blob/main/sphere.jpg" width="200" height="200">
-<img src="https://github.com/veilanexyz/pictures/blob/main/sphere1.jpg" width="200" height="200">
+<img src="https://github.com/veilanexyz/pictures/blob/main/sphere.jpg" width="20" height="20">
+<img src="https://github.com/veilanexyz/pictures/blob/main/sphere1.jpg" width="20" height="20">
