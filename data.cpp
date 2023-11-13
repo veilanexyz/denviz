@@ -147,7 +147,6 @@ void writeVectorsToFile(const std::vector<PolarDataPoint>& data, const std::stri
 std::vector<PolarDataPoint> readVectorsFromFile(const std::string& filename) {
     std::vector<PolarDataPoint> data;
     std::ifstream file(filename);
-
     if (!file.is_open()) {
         std::cerr << "Unable to open file: " << filename << std::endl;
         return data;
@@ -199,43 +198,6 @@ std::vector<PolarDataPoint> readPointsFromFile(const std::string& filename) {
     return data;
 }
 
-
-void writeArcsToFile(const std::vector<double>& data, const std::string& filename) {
-    std::ofstream file(filename);
-
-    if (file.is_open()) {
-        file << std::fixed << std::setprecision(2);
-
-        for (size_t i = 0; i < data.size(); i += 5) {
-            file << data[i] << " " << data[i + 1] << " "
-                << data[i + 2] << " " << data[i + 3] << " " << data[i + 4] << std::endl;
-        }
-        file.close();
-    }
-    else {
-        std::cerr << "Unable to open file: " << filename << std::endl;
-    }
-}
-
-std::vector<double> readArcsFromFile(const std::string& filename) {
-    std::vector<double> data;
-    std::ifstream file(filename);
-
-    if (!file.is_open()) {
-        std::cerr << "Unable to open file: " << filename << std::endl;
-        return data;
-    }
-
-    double value;
-    while (file >> value) {
-        data.push_back(value);
-    }
-
-    file.close();
-    return data;
-}
-
-
 void drawPoints(const std::vector<PolarDataPoint>& polarPoints, sf::RenderWindow& window, double scaleFactor) {
     window.clear();
 
@@ -243,15 +205,17 @@ void drawPoints(const std::vector<PolarDataPoint>& polarPoints, sf::RenderWindow
         double x = point.radius * std::cos(point.angle) * scaleFactor;
         double y = point.radius * std::sin(point.angle) * scaleFactor;
 
-
         sf::CircleShape circle(2.0f);
         circle.setPosition(static_cast<float>(x) + 400.0f, static_cast<float>(y) + 300.0f);
+
+        // Set the color to red
+        circle.setFillColor(sf::Color::Red);
+
         window.draw(circle);
     }
 
     window.display();
 }
-
 
 void drawVectors(const std::vector<PolarDataPoint>& polarPoints, sf::RenderWindow& window, double scaleFactor) {
     window.clear();
@@ -265,74 +229,57 @@ void drawVectors(const std::vector<PolarDataPoint>& polarPoints, sf::RenderWindo
         double x2 = polarPoints[i + 1].radius * std::cos(polarPoints[i + 1].angle) * scaleFactor + 400.0;
         double y2 = polarPoints[i + 1].radius * std::sin(polarPoints[i + 1].angle) * scaleFactor + 300.0;
 
-        lines.append(sf::Vertex(sf::Vector2f(static_cast<float>(x1), static_cast<float>(y1))));
-        lines.append(sf::Vertex(sf::Vector2f(static_cast<float>(x2), static_cast<float>(y2))));
+        lines.append(sf::Vertex(sf::Vector2f(static_cast<float>(x1), static_cast<float>(y1)), sf::Color::Red));
+        lines.append(sf::Vertex(sf::Vector2f(static_cast<float>(x2), static_cast<float>(y2)), sf::Color::Red));
     }
 
     window.draw(lines);
     window.display();
 }
 
-void drawArcs(const std::vector<double>& arcData, sf::RenderWindow& window, double scaleFactor) {
-    window.clear();
 
-    sf::VertexArray lines(sf::Lines);
 
-    for (size_t i = 0; i < arcData.size(); i += 5) {
-        double centerX = arcData[i];
-        double centerY = arcData[i + 1];
-        double radius = arcData[i + 2];
-        double startAngle = arcData[i + 3];
-        double endAngle = arcData[i + 4];
+//void makeBlackTransparent(sf::Image& image) {
+//    image.createMaskFromColor(sf::Color::Black);  // Заменяем черный цвет на прозрачный
+//}
 
-        for (double angle = startAngle; angle <= endAngle; angle += 0.01) {
-            double x1 = centerX + radius * std::cos(angle) * scaleFactor + 400.0;
-            double y1 = centerY + radius * std::sin(angle) * scaleFactor + 300.0;
-
-            double x2 = centerX + radius * std::cos(angle + 0.01) * scaleFactor + 400.0;
-            double y2 = centerY + radius * std::sin(angle + 0.01) * scaleFactor + 300.0;
-
-            lines.append(sf::Vertex(sf::Vector2f(x1, y1)));
-            lines.append(sf::Vertex(sf::Vector2f(x2, y2)));
-        }
-    }
-
-    window.draw(lines);
-    window.display();
-}
 
 void saveToPNG(const sf::RenderWindow& window, const std::string& filename) {
-    // Capture the content of the window
+    std::string folderPath = "C:\\test\\";
+    std::string fullpath = folderPath + filename;
+
     sf::Texture texture;
     texture.create(window.getSize().x, window.getSize().y);
     texture.update(window);
 
-    // Create an image from the texture
-    sf::Image image = texture.copyToImage();
-
-    // Save the image to a file
-    if (image.saveToFile(filename)) {
-        std::cout << "Image saved to " << filename << std::endl;
+    if (texture.copyToImage().saveToFile(fullpath)) {
+        std::cout << "Image saved to " << fullpath << std::endl;
     }
     else {
-        std::cerr << "Failed to save image to " << filename << std::endl;
+        std::cerr << "Failed to save image to " << fullpath << std::endl;
     }
 }
 
+//void makeColorTransparent(sf::Image& image, const sf::Color& color) {
+//    for (unsigned int y = 0; y < image.getSize().y; ++y) {
+//        for (unsigned int x = 0; x < image.getSize().x; ++x) {
+//            if (image.getPixel(x, y) == color) {
+//                image.setPixel(x, y, sf::Color::Transparent);
+//            }
+//        }
+//    }
+//}
 
 
-//int main(int argc, char* argv[]) {
-int main(){
-    srand(static_cast<unsigned int>(time(nullptr)));
+int main(int argc, char* argv[]) {
+    if (argc != 4) {
+        std::cerr << "Usage: " << argv[0] << " <visType> <numObjects> <noiseLevel>" << std::endl;
+        return 1;
+    }
 
-    //if (argc != 4) {
-    //    std::cerr << "Usage: " << argv[0] << " <visType> <numObjects> <noiseLevel>" << std::endl;
-    //    return 1;
-    //}
-
-    //std::string visTypeString = argv[1];
-    //std::string numObjectsString = argv[2];
-    //std::string noiseLevelString = argv[3];
+    std::string visTypeString = argv[1];
+    std::string numObjectsString = argv[2];
+    std::string noiseLevelString = argv[3];
 
     std::string visTypeString = "vectors";
     std::string numObjectsString = "500";
@@ -367,20 +314,19 @@ int main(){
         std::cerr << "Invalid visualization type" << std::endl;
         return 1;
     }
-
     CoordinateLimits limits;
     limits.maxRadius = 10.0;
     limits.maxAngle = 2.0 * M_PI;
 
     std::string typeName = getTypeName(visType);
     std::string filename = typeName + "_data.txt";
-    std::vector<PolarDataPoint> dataWithNoise = generateDataWithNoise(numObjects, visType, limits, noiseLevel);
+    std::vector <PolarDataPoint> dataWithNoise = generateDataWithNoise(numObjects, visType, limits, noiseLevel);
 
     if (visType == POINTS) {
-        std::vector<PolarDataPoint> dataWithNoise = generateDataWithNoise(numObjects, visType, limits, noiseLevel);
+        std::vector <PolarDataPoint> dataWithNoise = generateDataWithNoise(numObjects, visType, limits, noiseLevel);
         writePointsToFile(dataWithNoise, filename);
 
-        std::vector<PolarDataPoint> polarPoints = readPointsFromFile(filename);
+        std::vector <PolarDataPoint> polarPoints = readPointsFromFile(filename);
         double minRadius = std::numeric_limits<double>::max();
         double maxRadius = std::numeric_limits<double>::min();
         double minAngle = std::numeric_limits<double>::max();
@@ -412,41 +358,32 @@ int main(){
             }
 
             drawPoints(polarPoints, window, 1.0);
-
+            saveToPNG(window, "data.png");
         }
+        //sf::Image textureImage;
+        //if (!textureImage.loadFromFile("data.png")) {
+        //    return -1; // Failed to load texture
+        //}
+
+        //// Make black color transparent
+        //sf::Color blackColor(0, 0, 0);
+        //makeColorTransparent(textureImage, blackColor);
     }
 
     //else if (visType == ARCS) {
-    //    std::vector<PolarDataPoint> dataWithNoise = generateArcsWithNoise(numObjects, limits, noiseLevel);
-    //    writeArcsToFile(dataWithNoise, filename);
-
-    //    std::vector<double> arcData = readArcsFromFile(filename);
-
-    //    sf::RenderWindow window(sf::VideoMode(800, 600), "SFML Plot");
-
-    //    while (window.isOpen()) {
-    //        sf::Event event;
-    //        while (window.pollEvent(event)) {
-    //            if (event.type == sf::Event::Closed) {
-    //                window.close();
-    //            }
-    //        }
-
-    //        drawArcs(arcData, window, 1.0);
-    //    }
 
     //}
+
     else if (visType == VECTORS) {
-        std::vector<PolarDataPoint> dataWithNoise = generateDataWithNoise(numObjects, visType, limits, noiseLevel);
+        std::vector <PolarDataPoint> dataWithNoise = generateDataWithNoise(numObjects, visType, limits, noiseLevel);
         writeVectorsToFile(dataWithNoise, filename);
 
-        std::vector<PolarDataPoint> vectorPoints = readVectorsFromFile(filename);
+        std::vector <PolarDataPoint> vectorPoints = readVectorsFromFile(filename);
 
         double minRadius = std::numeric_limits<double>::max();
         double maxRadius = std::numeric_limits<double>::min();
         double minAngle = std::numeric_limits<double>::max();
         double maxAngle = std::numeric_limits<double>::min();
-
         for (const auto& point : vectorPoints) {
             minRadius = std::min(minRadius, point.radius);
             maxRadius = std::max(maxRadius, point.radius);
@@ -472,8 +409,17 @@ int main(){
                 }
             }
             drawVectors(vectorPoints, window, 1.0);
-        }
+            saveToPNG(window, "data.png");
 
+        }
+        //sf::Image textureImage;
+        //if (!textureImage.loadFromFile("data.png")) {
+        //    return -1; // Failed to load texture
+        //}
+
+        //// Make black color transparent
+        //sf::Color blackColor(0, 0, 0);
+        //makeColorTransparent(textureImage, blackColor);
     }
     return 0;
 }
