@@ -272,6 +272,7 @@ void saveToPNG(const sf::RenderWindow& window, const std::string& filename) {
 
 
 int main(int argc, char* argv[]) {
+    srand(static_cast<unsigned int>(time(nullptr)));
     if (argc != 4) {
         std::cerr << "Usage: " << argv[0] << " <visType> <numObjects> <noiseLevel>" << std::endl;
         return 1;
