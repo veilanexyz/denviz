@@ -19,3 +19,6 @@
 4. Натягивание текстуры на сферу и преобразование текстур. (Ирина Дудко)
 
 Ссылка на личное хранилище(Ирина): https://github.com/IrinaDudko0712/misis2023f-22-3-dudko-i-a
+
+![Первая сфера](https://github.com/veilanexyz/pictures/blob/main/sphere.jpg)
+![Вторая сфера](https://github.com/veilanexyz/pictures/blob/main/sphere1.jpg)
