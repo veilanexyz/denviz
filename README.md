@@ -4,11 +4,11 @@
 
 Задачи:
 
-1. Генерация данных в виде дуг, их сохранение и отрисовка (Татьяна Глушко)
+1. Работа с полигональной моделью, статистика (Татьяна Глушко)
 
 Ссылка на личное хранилище: https://github.com/Tog91l/misis2023f-22-3-glushko-t-a
 
-2. Создание текстуры и кластеризация данных (Валерия Набатова)
+2. Создание текстуры и тепловой карты (Валерия Набатова)
 
 Ссылка на личное хранилище: https://github.com/veilanexyz/misis2023f-22-03-nabatova-v-a
 
@@ -16,9 +16,14 @@
 
 Ссылка на личное хранилище(Анастасия): https://github.com/AnastasiayA26/misis2023f-22-03-yasakova-a-m
 
-4. Натягивание текстуры на сферу и преобразование текстур. (Ирина Дудко)
+4. Натягивание текстуры на сферу и преобразование текстур. Визуализация. (Ирина Дудко)
 
 Ссылка на личное хранилище(Ирина): https://github.com/IrinaDudko0712/misis2023f-22-3-dudko-i-a
 
 <img src="https://github.com/veilanexyz/pictures/blob/main/sphere.jpg" width="300" height="200">
 <img src="https://github.com/veilanexyz/pictures/blob/main/sphere1.jpg" width="240" height="200">
+
+Отдельные задачи:
+1. что-то (Адам)
+
+Ссылка на личное хранилище: https://github.com/IslAdam/misis2023f-22-03-islanov-a-r
