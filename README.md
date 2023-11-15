@@ -24,6 +24,6 @@
 <img src="https://github.com/veilanexyz/pictures/blob/main/sphere1.jpg" width="240" height="200">
 
 Отдельные задачи:
-1. что-то (Адам)
+1. Генерация гексагональной сетки для сферы. Написание библиотеки.(Исланов Адам)
 
 Ссылка на личное хранилище: https://github.com/IslAdam/misis2023f-22-03-islanov-a-r
