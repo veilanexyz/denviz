@@ -1,55 +1,38 @@
 #pragma once
+#ifndef DENVIZ_DATA_H
+#define DENVIZ_DATA_H
 
-#ifndef DATA_DATA_HPP
-#define DATA_DATA_HPP
-
-#include <iostream>
-#include <cmath>
 #include <vector>
 #include <fstream>
-#include <random>
-
-struct SphericalCoordinates {
-    double theta;
-    double phi;
-};
+#include <string>
 
 struct CartesianCoordinates {
     double x;
     double y;
-    double z;
+};
+struct CartesianForSegmentsCoordinates {
+    double x, y, x1, y1;
 };
 
-std::vector<SphericalCoordinates> generateSphericalCoordinates(int numPoints);
+CartesianCoordinates addGaussianNoise(const CartesianCoordinates& original, double stddev);
 
-CartesianCoordinates sphericalToCartesian(const SphericalCoordinates& spherical, double radius);
+CartesianCoordinates generateRandomPoint(double distributionMin, double distributionMax);
 
-SphericalCoordinates addGaussianNoiseToSpherical(const SphericalCoordinates& original, double stddev);
+void writePointsToFile(const std::vector<CartesianCoordinates>& coordinates, const std::string& filename);
 
-CartesianCoordinates addGaussianNoiseToCartesian(const CartesianCoordinates& original, double stddev);
+void writeSegmentsToFile(const std::vector<CartesianCoordinates>& coordinates, const std::string& filename);
 
-std::vector<SphericalCoordinates> generateNoisyParallelSegments(int numSegments, double minLength, double maxLength, double stddev);
+void generatePointsWithNoise(int numPoints, double blurCoefficient, double distributionMin, double distributionMax);
 
-std::vector<CartesianCoordinates> generateNoisyParallelSegmentsCartesian(int numSegments, double minLength, double maxLength, double stddev);
+void generateParallelSegments(int numSegments, double stddev, double distributionMin, double distributionMax);
 
-std::vector<SphericalCoordinates> generateSegmentsFromPointSpherical(int numSegments, double minLength, double maxLength, double stddev, const SphericalCoordinates& startPoint);
+void generateSegmentsFromPoint(int numSegments, double stddev, double distributionMin, double distributionMax, const CartesianCoordinates& startPoint);
 
-std::vector<CartesianCoordinates> generateSegmentsFromPointCartesian(int numSegments, double minLength, double maxLength, double stddev, const SphericalCoordinates& startSphericalPoint);
+void generateSegments(int numSegments, double stddev, double distributionMin, double distributionMax);
 
-void writeSphericalToFile(const std::vector<SphericalCoordinates>& coordinates, const std::string& filename);
+std::vector<CartesianCoordinates> readPointsFromFile(const char* filename);
 
-void writeSphericalVectorsToFile(const std::vector<SphericalCoordinates>& coordinates, const std::string& filename);
+std::vector<CartesianForSegmentsCoordinates> readSegmentsFromFile(const char* filename);
 
-void writeCartesianVectorsToFile(const std::vector<CartesianCoordinates>& coordinates, const std::string& filename);
+#endif //DENVIZ_DATA_H
 
-std::vector<SphericalCoordinates> readSphericalFromFile(const std::string& filename);
-
-std::vector<CartesianCoordinates> readCartesianVectorsFromFile(const std::string& filename);
-
-std::vector<SphericalCoordinates> readSphericalVectorsFromFile(const std::string& filename);
-
-void writeCartesianToFile(const std::vector<CartesianCoordinates>& coordinates, const std::string& filename);
-
-std::vector<CartesianCoordinates> readCartesianFromFile(const std::string& filename);
-
-#endif //DATA_DATA_HPP
