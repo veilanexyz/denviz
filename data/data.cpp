@@ -1,251 +1,227 @@
 #include <data/data.hpp>
+#include <random>
+#include <iostream>
 #include <fstream>
+#include <iomanip>
 
-std::vector<SphericalCoordinates> generateSphericalCoordinates(int numPoints) {
-    std::vector<SphericalCoordinates> coordinates;
-    for (int i = 0; i < numPoints; ++i) {
-        SphericalCoordinates point;
-        point.theta = 2 * M_PI * (static_cast<double>(rand()) / RAND_MAX);
-        point.phi = acos(2 * (static_cast<double>(rand()) / RAND_MAX) - 1);
-        coordinates.push_back(point);
-    }
-    return coordinates;
-}
-
-CartesianCoordinates sphericalToCartesian(const SphericalCoordinates& spherical, double radius = 1.0) {
-    CartesianCoordinates cartesian;
-    cartesian.x = radius * sin(spherical.phi) * cos(spherical.theta);
-    cartesian.y = radius * sin(spherical.phi) * sin(spherical.theta);
-    cartesian.z = radius * cos(spherical.phi);
-    return cartesian;
-}
-
-SphericalCoordinates addGaussianNoiseToSpherical(const SphericalCoordinates& original, double stddev) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::normal_distribution<double> distribution(0.0, stddev);//математическое ожидание, стандартное отклонение.
-
-    SphericalCoordinates noisy;
-    noisy.theta = original.theta + distribution(gen);
-    noisy.phi = original.phi + distribution(gen);
-
-    return noisy;
-}
-
-CartesianCoordinates addGaussianNoiseToCartesian(const CartesianCoordinates& original, double stddev) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::normal_distribution<double> distribution(0.0, stddev);
+CartesianCoordinates addGaussianNoise(const CartesianCoordinates& original, double stddev) {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    static std::normal_distribution<double> distribution(0.0, stddev);
 
     CartesianCoordinates noisy;
     noisy.x = original.x + distribution(gen);
     noisy.y = original.y + distribution(gen);
-    noisy.z = original.z + distribution(gen);
-
     return noisy;
 }
 
-std::vector<SphericalCoordinates> generateNoisyParallelSegments(int numSegments, double minLength, double maxLength, double stddev) {
-    std::vector<SphericalCoordinates> baseCoordinates = generateSphericalCoordinates(numSegments);
-    std::vector<SphericalCoordinates> noisySegments;
+CartesianCoordinates generateRandomPoint(double distributionMin, double distributionMax) {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::uniform_real_distribution<double> distribution(distributionMin, distributionMax);
 
-    for (const auto& baseCoord : baseCoordinates) {
-        double segmentLength = minLength + (maxLength - minLength) * (static_cast<double>(rand()) / RAND_MAX);
-        SphericalCoordinates startPoint = baseCoord;
-        SphericalCoordinates endPoint = addGaussianNoiseToSpherical(baseCoord, stddev);
-        endPoint.phi = std::min(M_PI, endPoint.phi + segmentLength);  // Ensure phi does not exceed PI
-
-        noisySegments.push_back(startPoint);
-        noisySegments.push_back(endPoint);
-    }
-
-    return noisySegments;
+    CartesianCoordinates point;
+    point.x = distribution(gen);
+    point.y = distribution(gen);
+    return point;
 }
 
-std::vector<CartesianCoordinates> generateNoisyParallelSegmentsCartesian(int numSegments, double minLength, double maxLength, double stddev) {
-    std::vector<SphericalCoordinates> baseCoordinates = generateSphericalCoordinates(numSegments);
+void writePointsToFile(const std::vector<CartesianCoordinates>& coordinates, const std::string& filename) {
+    std::ofstream outFile(filename);
+    if (!outFile.is_open()) {
+        std::cerr << "Unable to open file: " << filename << std::endl;
+        return;
+    }
+
+    outFile << std::fixed << std::setprecision(2);
+
+    for (const auto& point : coordinates) {
+        outFile << point.x << ' ' << point.y << '\n';
+    }
+    outFile.close();
+}
+
+void writeSegmentsToFile(const std::vector<CartesianCoordinates>& coordinates, const std::string& filename) {
+    std::ofstream outFile(filename);
+    if (!outFile.is_open()) {
+        std::cerr << "Unable to open file: " << filename << std::endl;
+        return;
+    }
+
+    outFile << std::fixed << std::setprecision(2);
+
+    for (size_t i = 0; i < coordinates.size(); i += 2) {
+        outFile << coordinates[i].x << " " << coordinates[i].y << " ";
+        outFile << coordinates[i + 1].x << " " << coordinates[i + 1].y << std::endl;
+    }
+
+    outFile.close();
+}
+
+
+void generatePointsWithNoise(int numPoints, double blurCoefficient, double distributionMin, double distributionMax) {
+    std::vector<CartesianCoordinates> noisyPoints;
+    std::vector<CartesianCoordinates> cleanPoints;
+    std::vector<CartesianCoordinates> differences;
+
+    for (int i = 0; i < numPoints; ++i) {
+        CartesianCoordinates cleanPoint = generateRandomPoint(distributionMin, distributionMax);
+        CartesianCoordinates noisyPoint = addGaussianNoise(cleanPoint, blurCoefficient);
+
+        cleanPoints.push_back(cleanPoint);
+        noisyPoints.push_back(noisyPoint);
+
+        CartesianCoordinates diff;
+        diff.x = noisyPoint.x - cleanPoint.x;
+        diff.y = noisyPoint.y - cleanPoint.y;
+        differences.push_back(diff);
+    }
+
+    // Write clean points, noisy points, and differences to files
+    writePointsToFile(cleanPoints, "clean_points.txt");
+    writePointsToFile(noisyPoints, "noisy_points.txt");
+    writePointsToFile(differences, "difference_points.txt");
+
+}
+
+
+void generateParallelSegments(int numSegments, double stddev, double distributionMin, double distributionMax) {
+    std::vector<CartesianCoordinates> cleanSegments;
     std::vector<CartesianCoordinates> noisySegments;
+    std::vector<CartesianCoordinates> differences;
 
-    for (const auto& baseCoord : baseCoordinates) {
-        double segmentLength = minLength + (maxLength - minLength) * (static_cast<double>(rand()) / RAND_MAX);
-        CartesianCoordinates startPoint = sphericalToCartesian(baseCoord);
-        CartesianCoordinates endPoint = sphericalToCartesian(addGaussianNoiseToSpherical(baseCoord, stddev), segmentLength);
+    for (int i = 0; i < numSegments; ++i) {
+        CartesianCoordinates cleanStartPoint = generateRandomPoint(distributionMin, distributionMax);
+        CartesianCoordinates cleanEndPoint = generateRandomPoint(distributionMin, distributionMax);
 
-        startPoint = addGaussianNoiseToCartesian(startPoint, stddev);
-        endPoint = addGaussianNoiseToCartesian(endPoint, stddev);
+        CartesianCoordinates noisyStartPoint = addGaussianNoise(cleanStartPoint, stddev);
+        CartesianCoordinates noisyEndPoint = addGaussianNoise(cleanEndPoint, stddev);
+
+        cleanSegments.push_back(cleanStartPoint);
+        cleanSegments.push_back(cleanEndPoint);
+
+        noisySegments.push_back(noisyStartPoint);
+        noisySegments.push_back(noisyEndPoint);
+
+        CartesianCoordinates diffStartPoint;
+        diffStartPoint.x = noisyStartPoint.x - cleanStartPoint.x;
+        diffStartPoint.y = noisyStartPoint.y - cleanStartPoint.y;
+        differences.push_back(diffStartPoint);
+
+        CartesianCoordinates diffEndPoint;
+        diffEndPoint.x = noisyEndPoint.x - cleanEndPoint.x;
+        diffEndPoint.y = noisyEndPoint.y - cleanEndPoint.y;
+        differences.push_back(diffEndPoint);
+    }
+
+    writeSegmentsToFile(cleanSegments, "clean_segments.txt");
+    writeSegmentsToFile(noisySegments, "noisy_segments.txt");
+    writeSegmentsToFile(differences, "difference_segments.txt");
+
+}
+
+void generateSegmentsFromPoint(int numSegments, double stddev, double distributionMin, double distributionMax, const CartesianCoordinates& startPoint) {
+    std::vector<CartesianCoordinates> cleanSegments;
+    std::vector<CartesianCoordinates> noisySegments;
+    std::vector<CartesianCoordinates> differences;
+
+    for (int i = 0; i < numSegments; ++i) {
+        CartesianCoordinates cleanEndPoint = generateRandomPoint(distributionMin, distributionMax);
+
+        CartesianCoordinates noisyEndPoint = addGaussianNoise(cleanEndPoint, stddev);
+
+        cleanSegments.push_back(startPoint);
+        cleanSegments.push_back(cleanEndPoint);
 
         noisySegments.push_back(startPoint);
-        noisySegments.push_back(endPoint);
+        noisySegments.push_back(noisyEndPoint);
+
+        CartesianCoordinates diffEndPoint;
+        diffEndPoint.x = noisyEndPoint.x - cleanEndPoint.x;
+        diffEndPoint.y = noisyEndPoint.y - cleanEndPoint.y;
+        differences.push_back(diffEndPoint);
     }
 
-    return noisySegments;
+    writeSegmentsToFile(cleanSegments, "clean_segments_from_point.txt");
+    writeSegmentsToFile(noisySegments, "noisy_segments_from_point.txt");
+    writeSegmentsToFile(differences, "difference_segments_from_point.txt");
+
 }
 
-std::vector<SphericalCoordinates> generateSegmentsFromPointSpherical(int numSegments, double minLength, double maxLength, double stddev, const SphericalCoordinates& startPoint) {
-    std::vector<SphericalCoordinates> segments;
+void generateSegments(int numSegments, double stddev, double distributionMin, double distributionMax) {
+    std::vector<CartesianCoordinates> cleanSegments;
+    std::vector<CartesianCoordinates> noisySegments;
+    std::vector<CartesianCoordinates> differences;
 
     for (int i = 0; i < numSegments; ++i) {
-        double segmentLength = minLength + (maxLength - minLength) * (static_cast<double>(rand()) / RAND_MAX);
-        SphericalCoordinates endPoint = addGaussianNoiseToSpherical(startPoint, stddev);
-        endPoint.phi = std::min(M_PI, endPoint.phi + segmentLength);  // Ensure phi does not exceed PI
+        CartesianCoordinates cleanStartPoint = generateRandomPoint(distributionMin, distributionMax);
+        CartesianCoordinates cleanEndPoint = generateRandomPoint(distributionMin, distributionMax);
 
-        segments.push_back(startPoint);
-        segments.push_back(endPoint);
+        CartesianCoordinates noisyStartPoint = addGaussianNoise(cleanStartPoint, stddev);
+        CartesianCoordinates noisyEndPoint = addGaussianNoise(cleanEndPoint, stddev);
+
+        // Save clean and noisy segments
+        cleanSegments.push_back(cleanStartPoint);
+        cleanSegments.push_back(cleanEndPoint);
+
+        noisySegments.push_back(noisyStartPoint);
+        noisySegments.push_back(noisyEndPoint);
+
+        // Calculate and save the difference
+        CartesianCoordinates diffStartPoint;
+        diffStartPoint.x = noisyStartPoint.x - cleanStartPoint.x;
+        diffStartPoint.y = noisyStartPoint.y - cleanStartPoint.y;
+        differences.push_back(diffStartPoint);
+
+        CartesianCoordinates diffEndPoint;
+        diffEndPoint.x = noisyEndPoint.x - cleanEndPoint.x;
+        diffEndPoint.y = noisyEndPoint.y - cleanEndPoint.y;
+        differences.push_back(diffEndPoint);
     }
 
-    return segments;
-}
-
-std::vector<CartesianCoordinates> generateSegmentsFromPointCartesian(int numSegments, double minLength, double maxLength, double stddev, const SphericalCoordinates& startSphericalPoint) {
-    std::vector<CartesianCoordinates> segments;
-
-    for (int i = 0; i < numSegments; ++i) {
-        double segmentLength = minLength + (maxLength - minLength) * (static_cast<double>(rand()) / RAND_MAX);
-
-        SphericalCoordinates noisySpherical = addGaussianNoiseToSpherical(startSphericalPoint, stddev);
-
-        CartesianCoordinates startPoint = sphericalToCartesian(noisySpherical);
-        CartesianCoordinates endPoint = sphericalToCartesian(addGaussianNoiseToSpherical(noisySpherical, stddev), segmentLength);
-
-        startPoint = addGaussianNoiseToCartesian(startPoint, stddev);
-        endPoint = addGaussianNoiseToCartesian(endPoint, stddev);
-
-        segments.push_back(startPoint);
-        segments.push_back(endPoint);
-    }
-
-    return segments;
-}
-
-
-void writeSphericalToFile(const std::vector<SphericalCoordinates>& coordinates, const std::string& filename) {
-    std::ofstream outFile(filename);
-    if (!outFile.is_open()) {
-        std::cerr << "Unable to open file: " << filename << std::endl;
-        return;
-    }
-
-    for (const auto& spherical : coordinates) {
-        outFile << spherical.theta << ' ' << spherical.phi << '\n';
-    }
-
-    outFile.close();
-}
-
-void writeSphericalVectorsToFile(const std::vector<SphericalCoordinates>& coordinates, const std::string& filename) {
-    std::ofstream outFile(filename);
-    if (!outFile.is_open()) {
-        std::cerr << "Unable to open file: " << filename << std::endl;
-        return;
-    }
-
-    for (size_t i = 0; i < coordinates.size(); i += 2) {
-        outFile << coordinates[i].theta << " " << coordinates[i].phi << " ";
-
-        outFile << coordinates[i+1].theta << " " << coordinates[i+1].phi << std::endl;
-    }
-
-    outFile.close();
-}
-
-std::vector<SphericalCoordinates> readSphericalFromFile(const std::string& filename) {
-    std::vector<SphericalCoordinates> coordinates;
-    std::ifstream inFile(filename);
-    if (!inFile.is_open()) {
-        std::cerr << "Unable to open file: " << filename << std::endl;
-        return coordinates;
-    }
-
-    SphericalCoordinates spherical;
-    while (inFile >> spherical.theta >> spherical.phi) {
-        coordinates.push_back(spherical);
-    }
-
-    inFile.close();
-    return coordinates;
+    writeSegmentsToFile(cleanSegments, "clean_segments.txt");
+    writeSegmentsToFile(noisySegments, "noisy_segments.txt");
+    writeSegmentsToFile(differences, "difference_segments.txt");
 }
 
 
-
-void writeCartesianToFile(const std::vector<CartesianCoordinates>& coordinates, const std::string& filename) {
-    std::ofstream outFile(filename);
-    if (!outFile.is_open()) {
-        std::cerr << "Unable to open file: " << filename << std::endl;
-        return;
-    }
-
-    for (const auto& cartesian : coordinates) {
-        outFile << cartesian.x << ' ' << cartesian.y << ' ' << cartesian.z << '\n';
-    }
-
-    outFile.close();
-}
-
-std::vector<SphericalCoordinates> readSphericalVectorsFromFile(const std::string& filename) {
-    std::vector<SphericalCoordinates> coordinates;
-    std::ifstream inFile(filename);
-    if (!inFile.is_open()) {
-        std::cerr << "Unable to open file: " << filename << std::endl;
-        return coordinates;
-    }
-
-    SphericalCoordinates spherical1, spherical2;
-    while (inFile >> spherical1.theta >> spherical1.phi >> spherical2.theta >> spherical2.phi) {
-        coordinates.push_back(spherical1);
-        coordinates.push_back(spherical2);
-    }
-
-    inFile.close();
-    return coordinates;
-}
-
-void writeCartesianVectorsToFile(const std::vector<CartesianCoordinates>& coordinates, const std::string& filename) {
-    std::ofstream outFile(filename);
-    if (!outFile.is_open()) {
-        std::cerr << "Unable to open file: " << filename << std::endl;
-        return;
-    }
-
-    for (size_t i = 0; i < coordinates.size(); i += 2) {
-        outFile << coordinates[i].x << " " << coordinates[i].y << " " << coordinates[i].z << " ";
-        outFile << coordinates[i + 1].x << " " << coordinates[i + 1].y << " " << coordinates[i + 1].z << std::endl;
-    }
-
-    outFile.close();
-}
-
-std::vector<CartesianCoordinates> readCartesianVectorsFromFile(const std::string& filename) {
+std::vector<CartesianCoordinates> readPointsFromFile(const char* filename) {
     std::vector<CartesianCoordinates> coordinates;
-    std::ifstream inFile(filename);
-    if (!inFile.is_open()) {
-        std::cerr << "Unable to open file: " << filename << std::endl;
+    double x, y;
+
+    std::ifstream inputFile(filename);
+
+    if (!inputFile.is_open()) {
+        std::cerr << "Ошибка при открытии файла." << std::endl;
         return coordinates;
     }
 
-    CartesianCoordinates cartesian1, cartesian2;
-    while (inFile >> cartesian1.x >> cartesian1.y >> cartesian1.z >> cartesian2.x >> cartesian2.y >> cartesian2.z) {
-        coordinates.push_back(cartesian1);
-        coordinates.push_back(cartesian2);
+    while (inputFile >> x >> y) {
+        CartesianCoordinates coord{ x, y };
+        coordinates.push_back(coord);
     }
 
-    inFile.close();
+    inputFile.close();
     return coordinates;
 }
 
-std::vector<CartesianCoordinates> readCartesianFromFile(const std::string& filename) {
-    std::vector<CartesianCoordinates> coordinates;
-    std::ifstream inFile(filename);
-    if (!inFile.is_open()) {
-        std::cerr << "Unable to open file: " << filename << std::endl;
-        return coordinates;
+std::vector<CartesianForSegmentsCoordinates> readSegmentsFromFile(const char* filename) {
+    std::vector<CartesianForSegmentsCoordinates> vectors;
+    double x, y, z, w;
+
+    std::ifstream inputFile(filename);
+
+    if (!inputFile.is_open()) {
+        std::cerr << "Ошибка при открытии файла." << std::endl;
+        return vectors;
     }
 
-    CartesianCoordinates cartesian;
-    while (inFile >> cartesian.x >> cartesian.y >> cartesian.z) {
-        coordinates.push_back(cartesian);
+    while (inputFile >> x >> y >> z >> w) {
+        CartesianForSegmentsCoordinates coordinates{ x, y, z, w };
+        vectors.push_back(coordinates);
     }
 
-    inFile.close();
-    return coordinates;
+    inputFile.close();
+    return vectors;
 }
 
