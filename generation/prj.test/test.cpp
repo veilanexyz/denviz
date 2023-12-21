@@ -98,14 +98,14 @@ int main(int argc, char* argv[]) {
     // Visualize the noisy points as spheres
     double opacity = 1.0;
     double color[3] = { 1.0, 0.0, 1.0 };
-    double radius = 2.0;
+    double radius = 1.0;
     double sphereColor[4] = { 0.0, 0.0, 0.0, 0.0 };
 
     vtkSmartPointer<vtkActor> sphereActor = visualization.generateSphereWithPoints(noisyPoints, opacity, color, radius, sphereColor);
 
     // Create a renderer
     vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
-    renderer->SetBackground(0.0, 0.0, 0.0); // Black background
+    renderer->SetBackground(0.0, 0.0, 0.0); // Black background (White (1.0, 1.0, 1.0) )
 
     // Add the actor to the renderer
     renderer->AddActor(sphereActor);
