@@ -3,7 +3,7 @@
 
 int main(int argc, char* argv[]) {
     if (argc < 8) {
-        std::cerr << "Usage: " << argv[0] << "<type> <numPoints> <blurCoefficient> <phi_1> <theta_1> <phi_2> <theta_2> [phi_3 theta_3 phi_4/numArcs theta_4]" << std::endl;
+        std::cerr << "Usage: " << argv[0] << "<type> <numPoints> <blurCoefficient> <phi_1> <theta_1> <phi_2> <theta_2> [phi_3 theta_3 phi_4 theta_4]" << std::endl;
         return 1;
     }
 
