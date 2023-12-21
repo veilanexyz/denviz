@@ -42,11 +42,14 @@ if (NOT VTK_FOUND)
   message(FATAL_ERROR " spherebyvtk: Unable to find the VTK build folder.")
 endif()
 
+source_group("data" FILES data/data.cpp)
+source_group("prj.test" FILES prj.test/test.cpp)
+source_group("visualization" FILES visualization/visualization.cpp visualization/include/visualization/visualization.hpp)
 
 add_subdirectory(visualization)
 add_subdirectory(prj.test)
 add_subdirectory(data)
-  
+
 if(WIN32)
     set(VTK_RUNTIME_PATH "${VTK_DIR}/../../bin")
 else()
@@ -106,3 +109,8 @@ install(FILES CMakeLists.txt DESTINATION .)
 install(FILES data/CMakeLists.txt DESTINATION data)
 install(FILES prj.test/CMakeLists.txt DESTINATION prj.test)
 install(FILES visualization/CMakeLists.txt DESTINATION visualization)
+
+vtk_module_autoinit(
+  TARGETS  visualization
+  MODULES ${VTK_LIBRARIES}
+)
