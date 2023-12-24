@@ -62,7 +62,6 @@ if (NOT VTK_FOUND)
 endif()
 
 set(SOURCES
-    main.cpp
     data/data.cpp
     prj.test/test.cpp
     visualization/visualization.cpp
