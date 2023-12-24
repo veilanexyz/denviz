@@ -9,6 +9,8 @@ target_link_libraries(visualization PUBLIC ${VTK_LIBRARIES})
 set_target_properties(visualization PROPERTIES OUTPUT_NAME "visualization")
 install(TARGETS visualization)
 
+export(TARGETS visualization FILE VisualizationTargets.cmake)
+
 include("${VTK_USE_FILE}")
 
 vtk_module_autoinit(
