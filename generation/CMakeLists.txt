@@ -61,6 +61,16 @@ if (NOT VTK_FOUND)
   message(FATAL_ERROR " generation: Unable to find the VTK build folder.")
 endif()
 
+set(SOURCES
+    main.cpp
+    data/data.cpp
+    prj.test/test.cpp
+    visualization/visualization.cpp
+)
+
+add_executable(generation ${SOURCES})
+target_link_libraries(generation PRIVATE ${VTK_LIBRARIES})
+
 source_group("data" FILES data/data.cpp)
 source_group("prj.test" FILES prj.test/test.cpp)
 source_group("visualization" FILES visualization/visualization.cpp visualization/include/visualization/visualization.hpp)
