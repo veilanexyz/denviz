@@ -68,6 +68,7 @@ set(SOURCES
 )
 
 add_executable(generation ${SOURCES})
+target_link_libraries(generation PRIVATE data visualization)
 target_link_libraries(generation PRIVATE ${VTK_LIBRARIES})
 
 source_group("data" FILES data/data.cpp)
