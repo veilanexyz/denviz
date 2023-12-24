@@ -60,28 +60,13 @@ find_package(Threads)
 if (NOT VTK_FOUND)
   message(FATAL_ERROR " generation: Unable to find the VTK build folder.")
 endif()
-
-set(SOURCES
-    data/data.cpp
-    prj.test/test.cpp
-    visualization/visualization.cpp
-)
-
-add_executable(generation ${SOURCES})
-target_link_libraries(generation PRIVATE data visualization)
-target_link_libraries(generation PRIVATE ${VTK_LIBRARIES})
-
-source_group("data" FILES data/data.cpp)
-source_group("prj.test" FILES prj.test/test.cpp)
-source_group("visualization" FILES visualization/visualization.cpp visualization/include/visualization/visualization.hpp)
-
 add_subdirectory(visualization)
 add_subdirectory(prj.test)
 add_subdirectory(data)
 
-set_target_properties(generation PROPERTIES
-                      CONFIGURATIONS Release
-                      )
+add_executable(generation test.cpp)
+
+target_link_libraries(generation PRIVATE data visualization)
 
 if(WIN32)
     set(VTK_RUNTIME_PATH "${VTK_DIR}/../../bin")
