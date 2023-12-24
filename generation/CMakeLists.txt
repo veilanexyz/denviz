@@ -79,6 +79,8 @@ install(DIRECTORY prj.test/ DESTINATION bin/prj.test)
 install(FILES prj.test/test.cpp DESTINATION bin/prj.test)
 install(FILES prj.test/CMakeLists.txt DESTINATION bin/prj.test)
 
+install(TARGETS visualization DESTINATION lib)
+
 install(TARGETS visualization DESTINATION bin)
 install(DIRECTORY visualization/include/ DESTINATION include/visualization)
 install(FILES visualization/visualization.cpp visualization/include/visualization/visualization.hpp DESTINATION include/visualization)
