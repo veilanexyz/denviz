@@ -69,6 +69,10 @@ add_subdirectory(visualization)
 add_subdirectory(prj.test)
 add_subdirectory(data)
 
+set_target_properties(generation PROPERTIES
+                      CONFIGURATIONS Release
+                      )
+
 if(WIN32)
     set(VTK_RUNTIME_PATH "${VTK_DIR}/../../bin")
 else()
