@@ -71,6 +71,10 @@ else()
     set(VTK_RUNTIME_PATH "${VTK_DIR}/../../lib")
 endif()
 
+set_target_properties(generation PROPERTIES
+                      CONFIGURATIONS Release
+                      )
+
 install(TARGETS data DESTINATION bin)
 install(DIRECTORY data/include/ DESTINATION include/data)
 install(FILES data/data.cpp DESTINATION include/data)
