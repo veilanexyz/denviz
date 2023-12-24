@@ -6,6 +6,7 @@ target_include_directories(visualization PUBLIC
 )
 include_directories("${VCPKG_ROOT}/installed/x64-windows/include")
 target_link_libraries(visualization ${VTK_LIBRARIES})
+set_target_properties(visualization PROPERTIES OUTPUT_NAME "visualization")
 install(TARGETS visualization)
 
 vtk_module_autoinit(
