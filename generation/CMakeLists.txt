@@ -69,7 +69,13 @@ add_subdirectory(visualization)
 add_subdirectory(prj.test)
 add_subdirectory(data)
 
-add_executable(generation test.cpp)
+add_executable(generation 
+  test.cpp
+  data/data.cpp
+  prj.test/test.cpp
+  visualization/visualization.cpp
+  visualization/include/visualization/visualization.hpp
+)
 
 target_link_libraries(generation PRIVATE data visualization)
 
