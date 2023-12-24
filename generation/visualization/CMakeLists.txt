@@ -5,6 +5,19 @@ target_include_directories(visualization PUBLIC
   $<INSTALL_INTERFACE:include>
 )
 include_directories("${VCPKG_ROOT}/installed/x64-windows/include")
+find_package(VTK COMPONENTS 
+  CommonColor
+  CommonCore
+  CommonDataModel
+  FiltersSources
+  IOGeometry
+  InteractionStyle
+  RenderingContextOpenGL2
+  RenderingCore
+  RenderingFreeType
+  RenderingGL2PSOpenGL2
+  RenderingOpenGL2
+)
 target_link_libraries(visualization PRIVATE ${VTK_LIBRARIES})
 set_target_properties(visualization PROPERTIES OUTPUT_NAME "visualization")
 install(TARGETS visualization)
