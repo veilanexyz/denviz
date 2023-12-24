@@ -60,6 +60,11 @@ find_package(Threads)
 if (NOT VTK_FOUND)
   message(FATAL_ERROR " generation: Unable to find the VTK build folder.")
 endif()
+
+source_group("data" FILES data/data.cpp)
+source_group("prj.test" FILES prj.test/test.cpp)
+source_group("visualization" FILES visualization/visualization.cpp visualization/include/visualization/visualization.hpp)
+
 add_subdirectory(visualization)
 add_subdirectory(prj.test)
 add_subdirectory(data)
