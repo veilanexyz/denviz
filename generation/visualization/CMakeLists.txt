@@ -9,6 +9,9 @@ target_link_libraries(visualization ${VTK_LIBRARIES})
 set_target_properties(visualization PROPERTIES OUTPUT_NAME "visualization")
 install(TARGETS visualization)
 
+include("${VTK_USE_FILE}")
+target_link_libraries(visualization PRIVATE ${VTK_LIBRARIES})
+
 vtk_module_autoinit(
   TARGETS  visualization
   MODULES ${VTK_LIBRARIES}
