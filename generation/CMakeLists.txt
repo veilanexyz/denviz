@@ -21,6 +21,10 @@ cmake_minimum_required(VERSION 3.23 FATAL_ERROR)
   #  message("Doxygen need to be installed to generate the doxygen documentation")
 #endif (DOXYGEN_FOUND)
 
+set_target_properties(generation PROPERTIES
+                      CONFIGURATIONS Release
+                      )
+
 project(generation)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -70,10 +74,6 @@ if(WIN32)
 else()
     set(VTK_RUNTIME_PATH "${VTK_DIR}/../../lib")
 endif()
-
-set_target_properties(generation PROPERTIES
-                      CONFIGURATIONS Release
-                      )
 
 install(TARGETS data DESTINATION bin)
 install(DIRECTORY data/include/ DESTINATION include/data)
