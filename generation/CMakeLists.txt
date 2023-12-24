@@ -21,9 +21,9 @@ cmake_minimum_required(VERSION 3.23 FATAL_ERROR)
   #  message("Doxygen need to be installed to generate the doxygen documentation")
 #endif (DOXYGEN_FOUND)
 
-set_target_properties(generation PROPERTIES
-                      CONFIGURATIONS Release
-                      )
+#set_target_properties(generation PROPERTIES
+#                      CONFIGURATIONS Release
+#                      )
 
 project(generation)
 
