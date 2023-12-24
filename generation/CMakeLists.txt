@@ -21,10 +21,6 @@ cmake_minimum_required(VERSION 3.23 FATAL_ERROR)
   #  message("Doxygen need to be installed to generate the doxygen documentation")
 #endif (DOXYGEN_FOUND)
 
-#set_target_properties(generation PROPERTIES
-#                      CONFIGURATIONS Release
-#                      )
-
 project(generation)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -68,16 +64,6 @@ source_group("visualization" FILES visualization/visualization.cpp visualization
 add_subdirectory(visualization)
 add_subdirectory(prj.test)
 add_subdirectory(data)
-
-add_executable(generation 
-  test.cpp
-  data/data.cpp
-  prj.test/test.cpp
-  visualization/visualization.cpp
-  visualization/include/visualization/visualization.hpp
-)
-
-target_link_libraries(generation PRIVATE data visualization)
 
 if(WIN32)
     set(VTK_RUNTIME_PATH "${VTK_DIR}/../../bin")
@@ -247,4 +233,3 @@ vtk_module_autoinit(
 #)
 
 #add_dependencies(visualization documentation)
-
