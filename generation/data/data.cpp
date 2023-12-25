@@ -5,7 +5,7 @@
 #include <iomanip>
 #define PI 3.14
 
-void SphericalCoordinatesGenerator::writePointsToFile(const std::string& filename, const std::vector<std::vector<double>>& points) const {
+void SphericalCoordinatesGenerator::writePointsToFile(const std::string& filename, const std::vector<Point>& points) const {
     std::ofstream outFile(filename);
 
     if (!outFile.is_open()) {
@@ -14,37 +14,24 @@ void SphericalCoordinatesGenerator::writePointsToFile(const std::string& filenam
     }
 
     for (const auto& point : points) {
-        for (const auto& coord : point) {
-            outFile << coord << " ";
-        }
-        outFile << std::endl;
+        outFile << point.theta << " " << point.phi << std::endl;
     }
 
     outFile.close();
 }
 
-std::vector<std::vector<double>> SphericalCoordinatesGenerator::readPointsFromFile(const std::string& filename) const {
+std::vector<Point> SphericalCoordinatesGenerator::readPointsFromFile(const std::string& filename) const {
     std::ifstream inFile(filename);
-    std::vector<std::vector<double>> points;
+    std::vector<Point> points;
 
     if (!inFile.is_open()) {
         std::cerr << "Unable to open file: " << filename << std::endl;
         return points;
     }
 
-    double value;
-    while (inFile >> value) {
-        std::vector<double> point;
-        point.push_back(value);
-
-        if (inFile >> value) {
-            point.push_back(value);
-            points.push_back(point);
-        } else {
-            std::cerr << "Error reading points from file." << std::endl;
-            inFile.close();
-            return points;
-        }
+    double theta, phi;
+    while (inFile >> theta >> phi) {
+        points.emplace_back(phi, theta);
     }
 
     inFile.close();
@@ -52,7 +39,7 @@ std::vector<std::vector<double>> SphericalCoordinatesGenerator::readPointsFromFi
 }
 
 std::vector<std::vector<double>> SphericalCoordinatesGenerator::generatePointsOnArc(int numPoints, double phi_start, double theta_start, double phi_end, double theta_end) const {
-    std::vector<std::vector<double>> points;
+    std::vector<Point> points;
 
     if (phi_start < 0 || phi_start >= 2 * PI || theta_start < 0 || theta_start > PI ||
         phi_end < 0 || phi_end >= 2 * PI || theta_end < 0 || theta_end > PI) {
@@ -72,14 +59,14 @@ std::vector<std::vector<double>> SphericalCoordinatesGenerator::generatePointsOn
         phi = fmod(phi + 2 * PI, 2 * PI);
         theta = std::max(0.0, std::min(PI, theta));
 
-        points.push_back({theta, phi});
+        points.emplace_back(phi, theta);
     }
 
     return points;
 }
 
-std::vector<std::vector<double>> SphericalCoordinatesGenerator::addCoordinateNoiseOnSphere(const std::vector<std::vector<double>>& points, double noiseLevel) const {
-    std::vector<std::vector<double>> noisyPoints;
+std::vector<std::vector<double>> SphericalCoordinatesGenerator::addCoordinateNoiseOnSphere(const std::vector<Point>& points, double noiseLevel) const {
+    std::vector<Point> noisyPoints;
 
     if (noiseLevel < 0) {
         std::cerr << "Invalid input: noiseLevel should be non-negative." << std::endl;
@@ -103,14 +90,14 @@ std::vector<std::vector<double>> SphericalCoordinatesGenerator::addCoordinateNoi
         phi = fmod(phi + 2 * PI, 2 * PI);
         theta = std::max(0.0, std::min(PI, theta));
 
-        noisyPoints.push_back({theta, phi});
+        noisyPoints.emplace_back(phi, theta);
     }
 
     return noisyPoints;
 }
 
 std::vector<std::vector<double>> SphericalCoordinatesGenerator::generatePointsFromCenter(int numArcs, int numPointsPerArc, double centerPhi, double centerTheta, double phi_start, double theta_start, double phi_end, double theta_end) const {
-    std::vector<std::vector<double>> points;
+    std::vector<Point> points;
 
     if (phi_start < 0 || phi_start >= 2 * PI || theta_start < 0 || theta_start > PI ||
         phi_end < 0 || phi_end >= 2 * PI || theta_end < 0 || theta_end > PI) {
@@ -123,7 +110,7 @@ std::vector<std::vector<double>> SphericalCoordinatesGenerator::generatePointsFr
     std::uniform_real_distribution<> dis(0.0, 1.0);
 
     for (int arc = 0; arc < numArcs; ++arc) {
-        std::vector<std::vector<double>> arcPoints;
+        std::vector<Point> arcPoints;
 
         for (int i = 0; i < numPointsPerArc; ++i) {
             double t_phi = dis(gen);   // параметр времени для azimuthal угла
@@ -135,7 +122,7 @@ std::vector<std::vector<double>> SphericalCoordinatesGenerator::generatePointsFr
             phi = fmod(phi + 2 * PI, 2 * PI);
             theta = std::max(0.0, std::min(PI, theta));
 
-            arcPoints.push_back({theta, phi});
+            arcPoints.emplace_back(phi, theta);
         }
 
         points.insert(points.end(), arcPoints.begin(), arcPoints.end());
@@ -143,6 +130,7 @@ std::vector<std::vector<double>> SphericalCoordinatesGenerator::generatePointsFr
 
     return points;
 }
+
 
 
 
