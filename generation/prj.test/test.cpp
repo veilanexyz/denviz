@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    std::vector<std::vector<double>> noisyPoints;
+    std::vector<Points> noisyPoints;
     if (filename1.empty()) {
         noisyPoints = generator.readPointsFromFile(filename);
     }
