@@ -22,17 +22,19 @@
 
 Ссылка на личное хранилище(Ирина): https://github.com/IrinaDudko0712/misis2023f-22-3-dudko-i-a
 
-<p align="center">
-  <img src="https://github.com/AnastasiayA26/1-year-univercity-c-/blob/main/3.png" width="400" height="300">
   <br>
-  Шум Гаусса: 0.1
+
+
+one_arc 3000 blurCoefficicent 0.1 0.2 3.1 2.1
+
+two_arcs 3000 blurCoefficicent 3.1 3.1 1.9 1.9 3.2 2.2 1.78 0.2 
+
 </p>
 
+
 <p align="center">
-  <img src="https://github.com/AnastasiayA26/1-year-univercity-c-/blob/main/4.png" width="400" height="300">
-  <br>
-  Шум Гаусса: 0.5
-</p>
+  <img src="https://github.com/AnastasiayA26/1-year-univercity-c-/blob/main/11.png" width="600" height="300">
+
 
 Отдельные задачи:
 1. Генерация гексагональной сетки для сферы. Написание библиотеки.(Исланов Адам)
