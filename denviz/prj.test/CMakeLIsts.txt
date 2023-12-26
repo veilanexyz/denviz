@@ -1,0 +1,20 @@
+add_executable(nvotest nvotest.cpp)
+add_executable(datatest  datatest.cpp)
+
+target_link_libraries(nvotest  PRIVATE nvolib)
+target_link_libraries(nvotest  PRIVATE visualization)
+target_link_libraries(datatest PRIVATE visualization)
+target_link_libraries(datatest PRIVATE data)
+
+target_include_directories(datatest PRIVATE
+       # ${CMAKE_CURRENT_SOURCE_DIR}/../nvolib/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/../visualization/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/../data/include
+        "${VTK_DIR}/../../include/vtk-9.2"
+)
+target_include_directories(nvotest PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../nvolib/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/../visualization/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/../data/include
+        "${VTK_DIR}/../../include/vtk-9.2"
+)
