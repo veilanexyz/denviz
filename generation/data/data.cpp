@@ -5,6 +5,7 @@
 #include <iomanip>
 #define PI 3.14
 
+
 void SphericalCoordinatesGenerator::writePointsToFile(const std::string& filename, const std::vector<Point>& points) const {
     std::ofstream outFile(filename);
 
@@ -14,7 +15,7 @@ void SphericalCoordinatesGenerator::writePointsToFile(const std::string& filenam
     }
 
     for (const auto& point : points) {
-        outFile << point.theta << " " << point.phi << std::endl;
+        outFile << point.phi << " " << point.theta << std::endl;
     }
 
     outFile.close();
@@ -30,7 +31,7 @@ std::vector<Point> SphericalCoordinatesGenerator::readPointsFromFile(const std::
     }
 
     double theta, phi;
-    while (inFile >> theta >> phi) {
+    while (inFile >> phi>> theta) {
         points.emplace_back(phi, theta);
     }
 
@@ -38,7 +39,7 @@ std::vector<Point> SphericalCoordinatesGenerator::readPointsFromFile(const std::
     return points;
 }
 
-std::vector<std::vector<double>> SphericalCoordinatesGenerator::generatePointsOnArc(int numPoints, double phi_start, double theta_start, double phi_end, double theta_end) const {
+std::vector<Point> SphericalCoordinatesGenerator::generatePointsOnArc(int numPoints, double phi_start, double theta_start, double phi_end, double theta_end) const {
     std::vector<Point> points;
 
     if (phi_start < 0 || phi_start >= 2 * PI || theta_start < 0 || theta_start > PI ||
@@ -65,7 +66,7 @@ std::vector<std::vector<double>> SphericalCoordinatesGenerator::generatePointsOn
     return points;
 }
 
-std::vector<std::vector<double>> SphericalCoordinatesGenerator::addCoordinateNoiseOnSphere(const std::vector<Point>& points, double noiseLevel) const {
+std::vector<Point> SphericalCoordinatesGenerator::addCoordinateNoiseOnSphere(const std::vector<Point>& points, double noiseLevel) const {
     std::vector<Point> noisyPoints;
 
     if (noiseLevel < 0) {
@@ -78,8 +79,8 @@ std::vector<std::vector<double>> SphericalCoordinatesGenerator::addCoordinateNoi
     std::normal_distribution<> dis(0.0, noiseLevel);
 
     for (const auto& point : points) {
-        double theta = point[0];
-        double phi = point[1];
+        double theta = point.theta;
+        double phi = point.phi;
 
         double deltaTheta = dis(gen);
         double deltaPhi = dis(gen);
@@ -96,7 +97,7 @@ std::vector<std::vector<double>> SphericalCoordinatesGenerator::addCoordinateNoi
     return noisyPoints;
 }
 
-std::vector<std::vector<double>> SphericalCoordinatesGenerator::generatePointsFromCenter(int numArcs, int numPointsPerArc, double centerPhi, double centerTheta, double phi_start, double theta_start, double phi_end, double theta_end) const {
+std::vector<Point> SphericalCoordinatesGenerator::generatePointsFromCenter(int numArcs, int numPointsPerArc, double centerPhi, double centerTheta, double phi_start, double theta_start, double phi_end, double theta_end) const {
     std::vector<Point> points;
 
     if (phi_start < 0 || phi_start >= 2 * PI || theta_start < 0 || theta_start > PI ||
@@ -130,7 +131,6 @@ std::vector<std::vector<double>> SphericalCoordinatesGenerator::generatePointsFr
 
     return points;
 }
-
 
 
 
