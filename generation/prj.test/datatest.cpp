@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    std::vector<Points> noisyPoints;
+    std::vector<Point> noisyPoints;
     if (filename1.empty()) {
         noisyPoints = generator.readPointsFromFile(filename);
     }
@@ -97,11 +97,10 @@ int main(int argc, char* argv[]) {
 
     // Visualize the noisy points as spheres
     double opacity = 1.0;
-    double color[3] = { 1.0, 0.0, 1.0 };
+    double color[3] = { 1.0, 0.0, 0.0 };
     double radius = 1.0;
-    double sphereColor[4] = { 0.0, 0.0, 0.0, 0.0 };
 
-    vtkSmartPointer<vtkActor> sphereActor = visualization.generateSphereWithPoints(noisyPoints, opacity, color, radius, sphereColor);
+    vtkSmartPointer<vtkActor> sphereActor = visualization.generateSphereWithPoints(noisyPoints, opacity, color, radius);
 
     // Create a renderer
     vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
@@ -132,7 +131,7 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < 6; ++i) {
         // Configure the camera inside the loop
         vtkSmartPointer<vtkCamera> camera = vtkSmartPointer<vtkCamera>::New();
-        camera->SetPosition(0, 0, 20);
+        camera->SetPosition(0, 0, 5);
         camera->SetFocalPoint(0, 0, 0);
 
         camera->Azimuth(30 * i);
@@ -148,7 +147,7 @@ int main(int argc, char* argv[]) {
         render_window_to_image_filter->Update();
 
         vtkSmartPointer<vtkPNGWriter> writer = vtkSmartPointer<vtkPNGWriter>::New();
-        writer->SetFileName(("output_" + std::to_string(outputCounter++) + ".png").c_str());
+        writer->SetFileName(("output_data" + std::to_string(outputCounter++) + ".png").c_str());
         writer->SetInputConnection(render_window_to_image_filter->GetOutputPort());
         writer->Write();
     }
