@@ -23,7 +23,7 @@
 class Visualization
 {
 public:
-        vtkSmartPointer<vtkActor> generateSphereWithPoints(const std::vector<std::vector<double>>& points, double opacity, double color[3], double radius, double sphereColor[4]) const;
+        vtkSmartPointer<vtkActor> generateSphereWithPoints(const std::vector<Point>& points, double opacity, double color[3], double radius, double sphereColor[4]) const;
         vtkSmartPointer<vtkActor> createSphere(double radius, double color[3]) const;
         void Mapping(const std::string& imagePath, const std::string& stlPath = "output.stl") const;
 };
