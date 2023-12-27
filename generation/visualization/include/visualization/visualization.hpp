@@ -19,6 +19,7 @@
 #include <vtkMath.h>
 #include <iostream>
 #include <vector>
+#include "data/data.hpp"
 
 class Visualization
 {
