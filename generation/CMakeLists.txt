@@ -76,10 +76,8 @@ install(DIRECTORY data/include/ DESTINATION include/data)
 install(FILES data/data.cpp DESTINATION include/data)
 
 install(DIRECTORY prj.test/ DESTINATION bin/prj.test)
-install(FILES prj.test/test.cpp DESTINATION bin/prj.test)
+install(FILES prj.test/datatest.cpp DESTINATION bin/prj.test)
 install(FILES prj.test/CMakeLists.txt DESTINATION bin/prj.test)
-
-install(TARGETS visualization DESTINATION lib)
 
 install(TARGETS visualization DESTINATION bin)
 install(DIRECTORY visualization/include/ DESTINATION include/visualization)
@@ -92,7 +90,27 @@ if(VISUALIZATION_INSTALL_TARGET)
     )
         install(DIRECTORY "${VTK_RUNTIME_PATH}/"
       DESTINATION bin
+      FILES_MATCHING PATTERN "*brotlicommon.dll*"
+    )
+        install(DIRECTORY "${VTK_RUNTIME_PATH}/"
+      DESTINATION bin
+      FILES_MATCHING PATTERN "*brotlidec.dll*"
+    )
+        install(DIRECTORY "${VTK_RUNTIME_PATH}/"
+      DESTINATION bin
+      FILES_MATCHING PATTERN "*bz2d.dll*"
+    )
+        install(DIRECTORY "${VTK_RUNTIME_PATH}/"
+      DESTINATION bin
       FILES_MATCHING PATTERN "*fmtd.dll*"
+    )
+            install(DIRECTORY "${VTK_RUNTIME_PATH}/"
+      DESTINATION bin
+      FILES_MATCHING PATTERN "*freetyped.dll*"
+    )
+                install(DIRECTORY "${VTK_RUNTIME_PATH}/"
+      DESTINATION bin
+      FILES_MATCHING PATTERN "*glew32d.dll*"
     )
         install(DIRECTORY "${VTK_RUNTIME_PATH}/"
       DESTINATION bin
@@ -142,6 +160,10 @@ if(VISUALIZATION_INSTALL_TARGET)
       DESTINATION bin
       FILES_MATCHING PATTERN "*vtkCommonMisc-9.2d.dll*"
     )
+            install(DIRECTORY "${VTK_RUNTIME_PATH}/"
+      DESTINATION bin
+      FILES_MATCHING PATTERN "*vtkCommonMath-9.2d.dll*"
+    )
         install(DIRECTORY "${VTK_RUNTIME_PATH}/"
       DESTINATION bin
       FILES_MATCHING PATTERN "*vtkCommonSystem-9.2d.dll*"
@@ -170,6 +192,10 @@ if(VISUALIZATION_INSTALL_TARGET)
       DESTINATION bin
       FILES_MATCHING PATTERN "*vtkFiltersHybrid-9.2d.dll*"
     )
+            install(DIRECTORY "${VTK_RUNTIME_PATH}/"
+      DESTINATION bin
+      FILES_MATCHING PATTERN "*vtkFiltersHyperTree-9.2d.dll*"
+    )
         install(DIRECTORY "${VTK_RUNTIME_PATH}/"
       DESTINATION bin
       FILES_MATCHING PATTERN "*vtkFiltersSources-9.2d.dll*"
@@ -182,9 +208,21 @@ if(VISUALIZATION_INSTALL_TARGET)
       DESTINATION bin
       FILES_MATCHING PATTERN "*vtkImagingSources-9.2d.dll*"
     )
+                install(DIRECTORY "${VTK_RUNTIME_PATH}/"
+      DESTINATION bin
+      FILES_MATCHING PATTERN "*vtkInteractionStyle-9.2d.dll*"
+    )
             install(DIRECTORY "${VTK_RUNTIME_PATH}/"
       DESTINATION bin
       FILES_MATCHING PATTERN "*vtkIOCore-9.2d.dll*"
+    )
+                install(DIRECTORY "${VTK_RUNTIME_PATH}/"
+      DESTINATION bin
+      FILES_MATCHING PATTERN "*vtkIOGeometry-9.2d.dll*"
+    )
+                    install(DIRECTORY "${VTK_RUNTIME_PATH}/"
+      DESTINATION bin
+      FILES_MATCHING PATTERN "*vtkIOImage-9.2d.dll*"
     )
             install(DIRECTORY "${VTK_RUNTIME_PATH}/"
       DESTINATION bin
@@ -201,6 +239,22 @@ if(VISUALIZATION_INSTALL_TARGET)
             install(DIRECTORY "${VTK_RUNTIME_PATH}/"
       DESTINATION bin
       FILES_MATCHING PATTERN "*vtkRenderingCore-9.2d.dll*"
+    )
+                install(DIRECTORY "${VTK_RUNTIME_PATH}/"
+      DESTINATION bin
+      FILES_MATCHING PATTERN "*vtkRenderingFreeType-9.2d.dll*"
+    )
+                    install(DIRECTORY "${VTK_RUNTIME_PATH}/"
+      DESTINATION bin
+      FILES_MATCHING PATTERN "*vtkRenderingHyperTreeGrid-9.2d.dll*"
+    )
+                        install(DIRECTORY "${VTK_RUNTIME_PATH}/"
+      DESTINATION bin
+      FILES_MATCHING PATTERN "*vtkRenderingOpenGL2-9.2d.dll*"
+    )
+                            install(DIRECTORY "${VTK_RUNTIME_PATH}/"
+      DESTINATION bin
+      FILES_MATCHING PATTERN "*vtkRenderingUI-9.2d.dll*"
     )
                 install(DIRECTORY "${VTK_RUNTIME_PATH}/"
       DESTINATION bin
@@ -232,6 +286,4 @@ vtk_module_autoinit(
   #  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   #  COMMENT "Generating API documentation with Doxygen"
   #  VERBATIM
-#)
 
-#add_dependencies(visualization documentation)
