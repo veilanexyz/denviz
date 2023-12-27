@@ -5,6 +5,12 @@ target_include_directories(visualization PUBLIC
   $<INSTALL_INTERFACE:include>
   ${VTK_INCLUDE_DIRS}
 )
+target_link_libraries(visualization PRIVATE data)
+
+target_include_directories(visualization PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../data/include
+        "${VTK_DIR}/../../include/vtk-9.2"
+)
 include_directories("${VCPKG_ROOT}/installed/x64-windows/include")
 find_package(VTK COMPONENTS 
   CommonColor
