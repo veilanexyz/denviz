@@ -16,7 +16,7 @@
 #include <vtkRenderWindowInteractor.h>
 #include <vtkMath.h>
 #include <iostream>
-#include "../data/include/data/data.hpp"
+#include "data/data.hpp"
 
 vtkSmartPointer<vtkActor> Visualization::generateSphereWithPoints(const std::vector<Point>& points, double opacity, double color[3], double radius) const {
 
