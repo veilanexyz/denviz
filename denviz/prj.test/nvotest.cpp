@@ -1,3 +1,8 @@
+#include <vtkSTLWriter.h>
+#include <vtkSmartPointer.h>
+#include <vtkMapper.h>
+#include <vtkActor.h>
+#include <vtkWindowToImageFilter.h>
 #include <vtkActor.h>
 #include <vtkCamera.h>
 #include <vtkSmartPointer.h>
@@ -12,32 +17,31 @@
 #include <iostream>
 #include <string>
 #include <nvolib/nvolib.hpp>
+#include <data/data.hpp>
 
 int main(int argc, char* argv[]) {
-    if (argc < 5) {
-        std::cerr << "Usage: " << argv[0] << " red green blue opacity radius" << std::endl;
+    if (argc < 3) {
+        std::cerr << "Usage: " << argv[0] << " opacity radius" << std::endl;
         return 1;
     }
 
-    double color[3];
-    for (int i = 0; i < 3; ++i) {
-        color[i] = std::stod(argv[i + 1]);
-    }
+    double color[3] = { 1.0, 0.0, 0.0 };
+    double opacity = std::stod(argv[1]);
+    double radius = std::stod(argv[2]);
 
-    double opacity = std::stod(argv[4]);
-    double radius = std::stod(argv[5]);
     Visualization visualization;
+    SphericalCoordinatesGenerator generator;
 
-    // Создаем сферу
+    // РЎРѕР·РґР°РµРј СЃС„РµСЂСѓ
     vtkSmartPointer<vtkActor> sphereActor = visualization.createRealSphere(radius, color, opacity);
 
-    // Сохраняем в STL
+    // РЎРѕС…СЂР°РЅСЏРµРј РІ STL
     vtkSmartPointer<vtkSTLWriter> stlWriter = vtkSmartPointer<vtkSTLWriter>::New();
     stlWriter->SetFileName("sphere.stl");
     stlWriter->SetInputData(sphereActor->GetMapper()->GetInput());
     stlWriter->Write();
 
-    // Проверяем, является ли STL файл бинарным
+    // РџСЂРѕРІРµСЂСЏРµРј, СЏРІР»СЏРµС‚СЃСЏ Р»Рё STL С„Р°Р№Р» Р±РёРЅР°СЂРЅС‹Рј
     STLCheck stlCheck;
     std::string stlFilename = "sphere.stl";
     if (stlCheck.isBinary_STL(stlFilename)) {
@@ -47,64 +51,102 @@ int main(int argc, char* argv[]) {
         std::cout << "The STL file is ASCII." << std::endl;
     }
 
-    // Вычисляем нормали и сохраняем их в файл
+    // Р’С‹С‡РёСЃР»СЏРµРј РЅРѕСЂРјР°Р»Рё Рё СЃРѕС…СЂР°РЅСЏРµРј РёС… РІ С„Р°Р№Р»
     NVO nvoSphere;
     nvoSphere.read_triangle_mesh("sphere.stl");
     nvoSphere.per_vertex_normals();
     nvoSphere.compute_normal_distribution_on_sphere(100);
 
-    // Создаем текстуру на основе файла с нормалями и сохраняем ее
+    // РЎРѕР·РґР°РµРј С‚РµРєСЃС‚СѓСЂСѓ РЅР° РѕСЃРЅРѕРІРµ С„Р°Р№Р»Р° СЃ РЅРѕСЂРјР°Р»СЏРјРё Рё СЃРѕС…СЂР°РЅСЏРµРј РµРµ
     TextureDrawer textureDrawer;
     textureDrawer.drawNormalsAndSaveDrawing("spherical_normals.txt", "output_texture.png");
 
-    // Визуализируем сферу с текстурой
-    vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
-    vtkSmartPointer<vtkActor> texturedSphereActor = visualization.Mapping("output_texture.png", radius, color, opacity);
-    renderer->AddActor(texturedSphereActor);
+    // Р’РёР·СѓР°Р»РёР·РёСЂСѓРµРј СЃС„РµСЂСѓ СЃ РЅРѕСЂРјР°Р»СЏРјРё
+    std::vector<Point> normals = generator.readPointsFromFile("spherical_normals.txt");
+    if (!normals.empty()) {
+        // РЎРѕР·РґР°РµРј СЂРµРЅРґРµСЂРµСЂ РґР»СЏ С‚РµРєСЃС‚СѓСЂС‹
+        vtkSmartPointer<vtkRenderer> textureRenderer = vtkSmartPointer<vtkRenderer>::New();
+        vtkSmartPointer<vtkActor> texturedSphereActor = visualization.Mapping("output_texture.png", radius, color, opacity);
+        textureRenderer->AddActor(texturedSphereActor);
 
-    // Создаем окно для визуализации
-    vtkSmartPointer<vtkRenderWindow> render_window = vtkSmartPointer<vtkRenderWindow>::New();
-    render_window->SetWindowName("Rendered Sphere");
-    render_window->SetSize(800, 800);
-    render_window->AddRenderer(renderer);
+        // РЎРѕР·РґР°РµРј РѕРєРЅРѕ РґР»СЏ РІРёР·СѓР°Р»РёР·Р°С†РёРё С‚РµРєСЃС‚СѓСЂС‹
+        vtkSmartPointer<vtkRenderWindow> textureRenderWindow = vtkSmartPointer<vtkRenderWindow>::New();
+        textureRenderWindow->SetWindowName("Texture Visualization");
+        textureRenderWindow->SetSize(800, 800);
+        textureRenderWindow->AddRenderer(textureRenderer);
 
-    // Добавляем интерактор и стиль взаимодействия
-    vtkSmartPointer<vtkRenderWindowInteractor> render_window_interactor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
-    vtkSmartPointer<vtkInteractorStyleTrackballCamera> style = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
-    render_window_interactor->SetInteractorStyle(style);
-    render_window_interactor->SetRenderWindow(render_window);
+        // Р”РѕР±Р°РІР»СЏРµРј РёРЅС‚РµСЂР°РєС‚РѕСЂ Рё СЃС‚РёР»СЊ РІР·Р°РёРјРѕРґРµР№СЃС‚РІРёСЏ
+        vtkSmartPointer<vtkRenderWindowInteractor> textureInteractor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
+        vtkSmartPointer<vtkInteractorStyleTrackballCamera> textureStyle = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
+        textureInteractor->SetInteractorStyle(textureStyle);
+        textureInteractor->SetRenderWindow(textureRenderWindow);
 
-    // Сохраняем изображения в формате PNG
-    int outputCounter = 0;
+        // РЎРѕР·РґР°РµРј СЂРµРЅРґРµСЂРµСЂ РґР»СЏ РЅРѕСЂРјР°Р»РµР№
+        vtkSmartPointer<vtkRenderer> normalRenderer = vtkSmartPointer<vtkRenderer>::New();
+        vtkSmartPointer<vtkActor> normalSphereActor = visualization.generateSphereWithPoints(normals, opacity, color, radius);
+        normalRenderer->AddActor(normalSphereActor);
 
-    for (int i = 0; i < 6; ++i) {
-        // Настраиваем камеру внутри цикла
-        vtkSmartPointer<vtkCamera> camera = vtkSmartPointer<vtkCamera>::New();
-        camera->SetPosition(0, 0, 5);
-        camera->SetFocalPoint(0, 0, 0);
+        // РЎРѕР·РґР°РµРј РѕРєРЅРѕ РґР»СЏ РІРёР·СѓР°Р»РёР·Р°С†РёРё РЅРѕСЂРјР°Р»РµР№
+        vtkSmartPointer<vtkRenderWindow> normalRenderWindow = vtkSmartPointer<vtkRenderWindow>::New();
+        normalRenderWindow->SetWindowName("Normals Visualization");
+        normalRenderWindow->SetSize(800, 800);
+        normalRenderWindow->AddRenderer(normalRenderer);
 
-        camera->Azimuth(30 * i);
-        camera->Elevation(10 * i);
+        // Р”РѕР±Р°РІР»СЏРµРј РёРЅС‚РµСЂР°РєС‚РѕСЂ Рё СЃС‚РёР»СЊ РІР·Р°РёРјРѕРґРµР№СЃС‚РІРёСЏ
+        vtkSmartPointer<vtkRenderWindowInteractor> normalInteractor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
+        vtkSmartPointer<vtkInteractorStyleTrackballCamera> normalStyle = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
+        normalInteractor->SetInteractorStyle(normalStyle);
+        normalInteractor->SetRenderWindow(normalRenderWindow);
 
-        // Устанавливаем камеру для рендерера
-        renderer->SetActiveCamera(camera);
+        // РЎРѕС…СЂР°РЅСЏРµРј РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РІ С„РѕСЂРјР°С‚Рµ PNG СЃ СЂР°Р·РЅС‹РјРё СѓРіР»Р°РјРё РїРѕРІРѕСЂРѕС‚Р°
+        for (int i = 0; i < 6; ++i) {
+            // РќР°СЃС‚СЂР°РёРІР°РµРј РєР°РјРµСЂСѓ РІРЅСѓС‚СЂРё С†РёРєР»Р° РґР»СЏ С‚РµРєСЃС‚СѓСЂС‹
+            vtkSmartPointer<vtkCamera> textureCamera = vtkSmartPointer<vtkCamera>::New();
+            textureCamera->SetPosition(0, 0, 5);
+            textureCamera->SetFocalPoint(0, 0, 0);
+            textureCamera->Azimuth(20 * i);
+            textureCamera->Elevation(10 * i);
+            textureRenderer->SetActiveCamera(textureCamera);
+            textureRenderWindow->Render();
 
-        render_window->Render();
+            // РЎРѕС…СЂР°РЅСЏРµРј РѕС‚СЂРµРЅРґРµСЂРµРЅРЅРѕРµ РёР·РѕР±СЂР°Р¶РµРЅРёРµ СЃ С‚РµРєСЃС‚СѓСЂРёСЂРѕРІР°РЅРЅРѕР№ СЃС„РµСЂРѕР№
+            vtkSmartPointer<vtkWindowToImageFilter> textureWindowToImageFilter = vtkSmartPointer<vtkWindowToImageFilter>::New();
+            textureWindowToImageFilter->SetInput(textureRenderWindow);
+            textureWindowToImageFilter->Update();
+            vtkSmartPointer<vtkPNGWriter> textureWriter = vtkSmartPointer<vtkPNGWriter>::New();
+            textureWriter->SetFileName(("output_texture_visualization" + std::to_string(i) + ".png").c_str());
+            textureWriter->SetInputConnection(textureWindowToImageFilter->GetOutputPort());
+            textureWriter->Write();
 
-        // Сохраняем отрендеренное изображение с текстурированной сферой
-        vtkSmartPointer<vtkWindowToImageFilter> render_window_to_image_filter = vtkSmartPointer<vtkWindowToImageFilter>::New();
-        render_window_to_image_filter->SetInput(render_window);
-        render_window_to_image_filter->Update();
+            // РќР°СЃС‚СЂР°РёРІР°РµРј РєР°РјРµСЂСѓ РІРЅСѓС‚СЂРё С†РёРєР»Р° РґР»СЏ РЅРѕСЂРјР°Р»РµР№
+            vtkSmartPointer<vtkCamera> normalCamera = vtkSmartPointer<vtkCamera>::New();
+            normalCamera->SetPosition(0, 0, 5);
+            normalCamera->SetFocalPoint(0, 0, 0);
+            normalCamera->Azimuth(20 * i);
+            normalCamera->Elevation(10 * i);
+            normalRenderer->SetActiveCamera(normalCamera);
+            normalRenderWindow->Render();
 
-        vtkSmartPointer<vtkPNGWriter> writer = vtkSmartPointer<vtkPNGWriter>::New();
-        writer->SetFileName(("output_nvo" + std::to_string(outputCounter++) + ".png").c_str());
-        writer->SetInputConnection(render_window_to_image_filter->GetOutputPort());
-        writer->Write();
+            // РЎРѕС…СЂР°РЅСЏРµРј РѕС‚СЂРµРЅРґРµСЂРµРЅРЅРѕРµ РёР·РѕР±СЂР°Р¶РµРЅРёРµ СЃ СЃС„РµСЂРѕР№ СЃ РЅРѕСЂРјР°Р»СЏРјРё
+            vtkSmartPointer<vtkWindowToImageFilter> normalWindowToImageFilter = vtkSmartPointer<vtkWindowToImageFilter>::New();
+            normalWindowToImageFilter->SetInput(normalRenderWindow);
+            normalWindowToImageFilter->Update();
+            vtkSmartPointer<vtkPNGWriter> normalWriter = vtkSmartPointer<vtkPNGWriter>::New();
+            normalWriter->SetFileName(("output_normals_visualization" + std::to_string(i) + ".png").c_str());
+            normalWriter->SetInputConnection(normalWindowToImageFilter->GetOutputPort());
+            normalWriter->Write();
+        }
+
+        // Р—Р°РїСѓСЃРєР°РµРј РёРЅС‚РµСЂР°РєС‚РѕСЂС‹
+        textureInteractor->Start();
+        normalInteractor->Start();
     }
-
-    // Запускаем интерактор
-    render_window_interactor->Start();
+    else {
+        std::cerr << "Failed to read normals from file." << std::endl;
+        return 1;
+    }
 
     return 0;
 }
+
 
