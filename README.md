@@ -1,9 +1,5 @@
 <h1 align="center">DenViz</a></h1>
 
-![Изначальная картинка](https://github.com/veilanexyz/pictures/blob/main/denviz.png)
-![Тепловая карта пример](https://github.com/veilanexyz/pictures/blob/main/teplo.png)
-
-
 Задачи:
 
 1. Написать библиотеку для распределения нормалей на сфере (Татьяна Глушко)
